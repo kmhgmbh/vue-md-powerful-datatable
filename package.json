@@ -1,9 +1,22 @@
 {
   "name": "vue-md-powerful-datatable",
   "version": "0.2.0",
-  "description": "A Vue.js 2.0 Component",
+  "description": "A powerful datatable component based on material design for Vuw 2.0",
+  "keywords": [
+    "vuejs",
+    "vue",
+    "material-design",
+    "md",
+    "datatable",
+    "table"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marklabenski/vue-md-powerful-datatable.git"
+  },
   "author": "Mark Labenski <mark.labenski@gmail.com>",
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "webpack -p --config build/webpack.prod.conf.js",
     "dev": "webpack-dev-server --inline --hot --config build/webpack.dev.conf.js"
