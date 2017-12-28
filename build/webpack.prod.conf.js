@@ -12,7 +12,10 @@ var webpackConfig = merge(baseWebpackConfig, {
   devtool: '#source-map',
   output: {
     filename: 'js/vue-md-powerful-datatable.js',
-    chunkFilename: 'js/[id].[chunkhash].js'
+    chunkFilename: 'js/[id].[chunkhash].js',
+    library: 'VueMdPowerfulDatatable',
+    libraryExport: 'default',
+    libraryTarget: 'umd'
   },
   vue: {
     loaders: utils.cssLoaders({
