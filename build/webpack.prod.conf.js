@@ -11,7 +11,7 @@ var distDir = path.resolve(__dirname, '../dist');
 var webpackConfig = merge(baseWebpackConfig, {
   devtool: '#source-map',
   output: {
-    filename: 'js/[name].[chunkhash].js',
+    filename: 'js/vue-md-powerful-datatable.js',
     chunkFilename: 'js/[id].[chunkhash].js'
   },
   vue: {
