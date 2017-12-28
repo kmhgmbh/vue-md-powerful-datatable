@@ -1,8 +1,10 @@
-
 import VueMdPowerfulDatatable from './data-table/VueMdPowerfulDatatable';
 
-if (typeof window !== 'undefined') {
-  window.VueMdPowerfulDatatable = VueMdPowerfulDatatable;
+// expose component to global scope
+if (typeof window !== 'undefined' && window.Vue) {
+  /* eslint-disable */
+  Vue.component('vue-md-powerful-datatable', VueMdPowerfulDatatable);
+  /* eslint-enable */
 }
 
 /* eslint import/prefer-default-export: 0 */

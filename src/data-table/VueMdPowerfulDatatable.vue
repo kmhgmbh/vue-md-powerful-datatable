@@ -150,7 +150,7 @@ require('material-design-lite/material.min.css');
 Vue.use(VueMdl);
 
 export default {
-  name: 'data-table',
+  name: 'vue-md-powerful-datatable',
 
   props: {
     headData: {
