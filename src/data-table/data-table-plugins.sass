@@ -1,0 +1,64 @@
+
+@import './vars.sass'
+
+.data-table-pager
+  width: 100%
+  padding: 20px 10px
+  text-align: right
+
+  .mdl-button
+    min-width: 20px
+    padding: 0 10px
+    margin: 2px 2px
+
+.data-table
+
+  .selection-column
+    min-width: 50px
+    max-width: 50px
+    text-align: center
+
+    label
+      padding: 0 !important
+      max-width: 30px !important
+      width: 15px !important
+
+  .block
+    background: $ci-grey + 10%
+
+    > td
+      border-bottom: 3px solid $ci-blue
+
+    th
+      height: 50px
+
+    @media (max-width: 600px)
+      margin-bottom: 20px
+      display: block
+
+      &:before
+        content: ''
+        position: absolute
+        left: 50%
+        margin-left: -15px
+        margin-top: -7px
+        transform: rotate(45deg)
+        width: 20px
+        height: 20px
+        border-left: 10px solid $ci-blue
+        border-top: 10px solid $ci-blue
+
+      > td
+        border: 5px solid $ci-blue
+        border-top: 10px solid $ci-blue
+
+  .add-row
+    background: $ci-grey + 7%
+    padding: 10px
+    text-align: right
+
+    .md-icon
+      font-size: $fs-m
+      height: 18px
+      min-height: 18px
+      font-weight: 700

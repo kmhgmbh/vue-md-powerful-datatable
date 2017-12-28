@@ -1,0 +1,319 @@
+
+@import './vars.sass'
+
+.data-table
+  display: inline-block
+  width: 100%
+  max-width: 100%
+  overflow: hidden
+
+  th, td
+    *
+      transition: .2s ease
+
+  @media (max-width: 600px)
+    .table-header
+      display: none
+
+  .inner
+    overflow: auto
+
+  table
+    display: inherhit
+    width: 100%
+    max-width: 100%
+    padding: 0
+    margin: 0
+    border-spacing: 0
+
+    th
+      background: $ci-yellow
+      color: $ci-blue
+      align-items: center
+      text-align: left
+      height: 60px
+      padding: 0 10px
+      text-overflow: ellipsis
+      white-space: nowrap
+      overflow: hidden
+
+      .headname
+        max-width: 100%
+        display: grid
+        min-width: 30px
+        text-overflow: ellipsis
+        white-space: nowrap
+        overflow: hidden
+
+      .md-layout
+        width: 100%
+        max-width: 100%
+        display: inline-grid
+        grid-template-columns: repeat(3, 1fr)
+        grid-template-columns: 30px auto 50px
+
+      .title
+        display: table-caption
+        overflow: hidden
+
+      &.searchMode
+
+        .title
+          font-size: $fs-s
+
+        .md-input-container
+          padding: 0
+          margin: 0
+          min-height: 24px
+          color: $ci-yellow - 100%
+
+          &:after
+            background-color: $ci-yellow - 100%
+
+          label
+            top: 5px
+            font-size: $fs-m
+            font-weight: 500
+            color: $ci-yellow - 50%
+
+          input
+            background: none
+            border: 0px none
+            border-bottom: 1px solid $ci-yellow - 50%
+            width: 100%
+            outline: 0
+            height: 24px
+            min-width: 100px
+            font-size: $fs-m
+            font-weight: 500
+            color: $ci-yellow - 100%
+
+            &:hover, &:focus
+              color: $ci-yellow - 100%
+
+      &.sortable
+        cursor: pointer
+
+      &:first-child
+        border-radius: 7px 0 0 0
+
+      &:last-child
+        border-radius: 0 7px 0 0
+
+      .md-layout
+        justify-content: space-between
+        flex-wrap: nowrap
+        align-items: center
+
+        .md-icon
+          margin: 0
+          padding: 0
+          height: auto
+          min-height: auto
+          font-size: 20px
+
+          &.right
+            transform: rotate(-90deg)
+            margin-top: -4px
+            color: $ci-yellow - 50%
+
+          &.search
+            margin-left: 20px
+            color: $ci-yellow - 50%
+
+        .headname
+          text-overflow: ellipsis
+          white-space: nowrap
+          overflow: hidden
+          flex: 1
+
+    .table-row
+      background: $ci-grey + 7%
+      transition: .1s ease
+
+      &:not(.search-row):not(.noHover) td
+        cursor: pointer
+
+      &:hover:not(.noHover)
+        background: $ci-grey - 10%
+
+      &.active td
+        background: $ci-blue
+        color: #fff
+
+      &.noHover, &:not(.active), &:not(.search-row)
+        cursor: default
+
+      &.search-row
+        background: $ci-grey - 7%
+        display: none
+
+        @media (max-width: 600px)
+          display: block
+
+        .search-icon
+          position: absolute
+
+        .md-input-container
+          padding: 0
+
+        label
+          margin-left: 3px
+
+    td
+      min-width: 100px
+      text-align: left
+      text-overflow: ellipsis
+      white-space: nowrap
+      overflow: hidden
+
+      &.noData
+        text-align: center
+        font-weight: 600
+
+      div
+        text-overflow: ellipsis
+        white-space: nowrap
+        overflow: hidden
+        max-width: 100%
+
+      &.hasIcon
+        white-space: nowrap
+        text-align: center
+
+        .md-icon
+          cursor: pointer
+          transition: .1s ease
+          margin: 0 5px
+
+          &:hover:not(.disabled)
+            color: $ci-orange
+
+          &.disabled
+            color: $ci-grey - 20%
+            cursor: default
+
+      .highlight
+        background: $ci-yellow
+
+      .onlyState
+        color: $ci-grey - 50%
+        text-align: center
+
+        .green
+          color: $ci-green
+
+        .red
+          color: $ci-red
+
+        .yellow
+          color: $ci-yellow
+
+      .md-input-container
+        padding: 0
+        margin: 0
+        height: 30px
+        min-height: 30px
+
+        @media (max-width: 600px)
+          margin: 0 10px
+          max-width: calc(100% - 160px)
+          height: 40px
+          min-height: 40px
+          position: absolute
+          margin-left: 10px
+          padding-top: 4px
+
+        &:after
+          background-color: transparent
+
+        label
+          margin-top: -16px
+          margin-left: 1px
+
+          @media (max-width: 600px)
+            margin-top: -12px
+            margin-left: 2px
+
+        input
+          max-width: 100%
+          width: 100%
+          position: absolute
+          padding-left: 2px
+
+        .md-clear-input
+          bottom: -4px
+
+        i
+          margin: 7px auto
+
+          @media (max-width: 600px)
+            margin: 10px auto
+
+    th, tr:not(.block) td
+      text-overflow: ellipsis
+      white-space: nowrap
+      overflow: hidden
+
+      @media (max-width: 600px)
+        min-height: 40px
+        max-height: 40px
+
+    th, td
+      padding: 10px
+      border-right: 1px solid #fff
+      border-bottom: 1px solid #fff
+      cursor: default
+      color: $ci-color
+
+      .columnHead
+        display: none
+        background: $ci-yellow
+        width: 100px
+        color: $ci-blue
+        font-weight: 500
+
+        &.empty
+          color: $ci-yellow
+
+      @media (max-width: 600px)
+        display: block
+        width: 100%
+        max-width: 100%
+        padding: 0
+        text-align: left
+
+        span
+          display: inline-block
+          margin: 0
+
+        > div:not(.micromarket-details), .columnHead
+          display: inline-block
+          padding: 10px
+          margin: 0
+          text-overflow: ellipsis
+          white-space: nowrap
+          overflow: hidden
+
+          i
+            display: inline-block
+            height: 20px
+            min-height: 20px
+            width: 20px
+            min-width: 20px
+            font-size: 20px
+
+    @media (max-width: 600px)
+      tr:not(.block)
+        display: block
+        background: none
+        margin-bottom: 20px
+
+        td
+          background: $ci-grey
+
+          &:first-child
+            border-radius: 7px 7px 0 0
+
+          &:last-child
+            border-radius: 0 0 7px 7px
