@@ -1,11 +1,13 @@
 
-import Main from './main';
+import VueMdPowerfulDatatable from './data-table/VueMdPowerfulDatatable';
 
 if (typeof window !== 'undefined') {
-  window.Main = Main;
+  window.VueMdPowerfulDatatable = VueMdPowerfulDatatable;
 }
 
 /* eslint import/prefer-default-export: 0 */
 export {
-  Main,
+  VueMdPowerfulDatatable,
 };
+
+export default VueMdPowerfulDatatable;
