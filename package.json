@@ -17,6 +17,8 @@
   },
   "author": "Mark Labenski <mark.labenski@gmail.com>",
   "private": false,
+  "main": "src/data-table/VueMdPowerfulDatatable.vue",
+  "module": "src/data-table/VueMdPowerfulDatatable.vue",
   "scripts": {
     "build": "webpack -p --config build/webpack.prod.conf.js",
     "dev": "webpack-dev-server --inline --hot --config build/webpack.dev.conf.js"
