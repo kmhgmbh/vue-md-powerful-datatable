@@ -27,19 +27,27 @@
 
 ### Use component
 
+- add material design icons to html
+```html
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+<link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+```
 - add to components:
 ```javascript
+import VueMdPowerfulDatatable from 'vue-md-powerful-datatable';
+...
 components: {
     VueMdPowerfulDatatable,
 },
 ```
+
 - in template:
 ```html
-<VueMdPowerfulDatatable
+<vue-md-powerful-datatable
     :headData="birdsHeadData"
     :data="birds"
     :max="10">
-</VueMdPowerfulDatatable>
+</vue-md-powerful-datatable>
 ```
 
 - data and headData in parent component
