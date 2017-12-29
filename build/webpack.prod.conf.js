@@ -17,12 +17,6 @@ var webpackConfig = merge(baseWebpackConfig, {
     libraryExport: 'default',
     libraryTarget: 'umd'
   },
-  vue: {
-    loaders: utils.cssLoaders({
-      sourceMap: true,
-      extract: true
-    })
-  },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
@@ -35,8 +29,15 @@ var webpackConfig = merge(baseWebpackConfig, {
     }),
     new webpack.optimize.OccurenceOrderPlugin(),
     // extract css into its own file
-    new ExtractTextPlugin('css/[name].[contenthash].css')
-  ]
+    new ExtractTextPlugin('./css/vue-md-powerful-datatable.css'),
+  ],
+  vue: {
+    loaders: {
+      css: ExtractTextPlugin.extract("css"),
+      // you can also include <style lang="less"> or other langauges
+      less: ExtractTextPlugin.extract("css!less")
+    }
+  },
 });
 
 module.exports = webpackConfig;

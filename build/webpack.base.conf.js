@@ -1,7 +1,7 @@
 var path = require('path');
 var projectRoot = path.resolve(__dirname, '../');
 var utils = require('./utils');
-
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -40,16 +40,23 @@ module.exports = {
     }],
     loaders: [{
       test: /\.vue$/,
-      loader: 'vue'
+      loader: 'vue',
+      options: {
+        loaders: {
+          scss: 'sass-loader',
+        }
+      }
     }, {
       test: /\.js$/,
       loader: 'babel',
       include: projectRoot,
       exclude: /node_modules/
     },
-    {
-      test: /\.css$/,
-      loader: 'style!css!'
-    }]
+    /*{
+      test: /\.s[a|c]ss$/,
+      loader: 'vue-style-loader!css-loader!sass-loader'
+    },*/
+    { test: /\.css$/, loader: ExtractTextPlugin.extract('css-loader') },
+    ]
   }
 }
