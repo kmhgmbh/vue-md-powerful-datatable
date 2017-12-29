@@ -1,5 +1,6 @@
 .DS_Store
 node_modules/
 dist/*
+!dist/css/vue-md-powerful-datatable.*
 !dist/js/vue-md-powerful-datatable.*
 npm-debug.log
