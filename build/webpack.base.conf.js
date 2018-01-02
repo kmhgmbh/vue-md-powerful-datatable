@@ -52,11 +52,10 @@ module.exports = {
       include: projectRoot,
       exclude: /node_modules/
     },
-    /*{
-      test: /\.s[a|c]ss$/,
-      loader: 'vue-style-loader!css-loader!sass-loader'
-    },*/
-    { test: /\.css$/, loader: ExtractTextPlugin.extract('css-loader') },
+    {
+      test: /\.css$/,
+      loader: 'style-loader!css-loader'
+    },
     ]
   }
 }

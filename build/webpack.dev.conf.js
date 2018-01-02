@@ -15,12 +15,6 @@ module.exports = merge(baseWebpackConfig, {
     app: './src/dev.js'
   },
   devtool: '#eval-source-map',
-  vue: {
-    loaders: utils.cssLoaders({
-      sourceMap: true,
-      extract: true
-    })
-  },
   plugins: [
     new webpack.DefinePlugin({
         'process.env': "'development'"
