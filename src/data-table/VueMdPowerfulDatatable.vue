@@ -8,7 +8,7 @@
           <th v-if="selectable" class="selection-column" :style="dynamicWidth">
             <mdl-checkbox v-model="selectAllRowsFlag"></mdl-checkbox>
           </th>
-          <th @click="sort(head)" :class="{searchMode: getSearchContainer(id + '_search_container_' + encode(head.key, true)), sortable: !head.keys && sortable}" v-for="head in headData" key="headData" v-if="(head.keys && icons) || (!head.keys && !ignore(head.key))" :style="dynamicWidth">
+          <th @click="sort(head)" :class="{searchMode: getSearchContainer(id + '_search_container_' + encode(head.key, true)), sortable: !head.keys && sortable}" v-for="head in headData" v-if="(head.keys && icons) || (!head.keys && !ignore(head.key))" :style="dynamicWidth">
             <md-layout md-row style="max-width: 100%">
               <md-icon v-if="sortedAsc(head) && sortable" class="no-selection">arrow_drop_down</md-icon>
               <md-icon v-else-if="sortedDesc(head) && sortable" class="no-selection">arrow_drop_up</md-icon>
@@ -56,7 +56,7 @@
             <td v-if="selectable" class="selection-column">
               <mdl-checkbox @click.native="toggleDataRowSelection(row, rowIndex, $event)" v-model="selectedRows" :val="rowIndex"></mdl-checkbox>
               <!-- <md-checkbox @change="toggleDataRowSelection(row, rowIndex)" v-model="selectedRows[rowIndex]"></md-checkbox> -->
-            <</td>
+            </td>
             <td @click="!column.keys && toggleBlock(rowIndex, row)" v-for="column, columnIndex in headData" :class="{hasIcon: (column.keys && icons)}" :style="dynamicWidth">
 
               <div class="columnHead">
@@ -126,28 +126,8 @@
 
 <script>
 import Vue from 'vue';
-import VueMdl from 'vue-mdl';
 
 Vue.config.productionTip = false;
-
-/* ********************
- * @name VueMaterial
- * @description Vue Material Support
- */
-require('vue-material/dist/vue-material.css');
-const VueMaterial = require('vue-material');
-
-Vue.use(VueMaterial);
-Vue.material.registerTheme('blue', {});
-
-/* ********************
- * @name VueMdl
- * @description Vue Extended Ui
- */
-require('material-design-lite/material.min.js');
-require('material-design-lite/material.min.css');
-
-Vue.use(VueMdl);
 
 export default {
   name: 'vue-md-powerful-datatable',
@@ -544,6 +524,7 @@ export default {
       } else {
         this.selectedRows = [];
       }
+      this.$emit('rowSelectionChange', this.selectedRowsByIndexKey);
     },
 
     toggleDataRowSelection(rowData, index, event) {
@@ -557,6 +538,7 @@ export default {
         } else {
           this.selectedRowsByIndexKey.push(indexKey);
         }
+        this.$emit('rowSelectionChange', this.selectedRowsByIndexKey);
       }
     },
 

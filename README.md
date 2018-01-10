@@ -73,7 +73,7 @@ $ yarn add vue-md-powerful-datatable
   <vue-md-powerful-datatable
       :headData="birdsHeadData"
       :data="birds"
-      :max="10">
+      max=10>
   </vue-md-powerful-datatable>
   ```
 
@@ -122,9 +122,46 @@ $ yarn add vue-md-powerful-datatable
 |-------|-----|------|----|
 | data | actual table data | Array | `[{ name: 'test', anotherKey: 'asd', ... }, ...]` |
 | headData | table header information | Array | `[{`<br> `  key: 'name', // object's key` <br> `  name: 'Birds Name' // column title }]` |
+| max | number of rows per page, default: ***20*** | Number | &nbsp; |
 | ignoreColumns | hide data columns | Array|`['anotherKey', ...]` |
 | search | enable search, default: ***true*** | Boolean | |
 | pager | enable pagination, default: ***true*** | Boolean | |
 | sortable | enable sort, default: ***true***| Boolean | |
-| selectable | enable selectable rows, default: ***false***| Boolean | | 
-| max | number of rows per page, default: ***20*** | Number | &nbsp; |
+| selectable | enable selectable rows (selectedRowIndexKey must be provided on true), default: ***false***| Boolean | | 
+| selectedRowIndexKey | key name for selecting lines | String | `'name'`|
+
+
+#### Events
+
+|event name|description|arguments|
+|----------|-----------|---------|
+|rowSelectionChange|Will be emitted everytime a row is selected or deselected|Array of keys of selected lines|
+
+
+#### Use selectable feature
+- in template:
+  ```html
+  <vue-md-powerful-datatable
+      :headData="birdsHeadData"
+      :data="birds"
+      max=10
+
+      selectable="true"
+      selectedRowIndexKey="name"
+      v-on:rowSelectionChange="selectedRowsChanged"
+      > <!-- last 3 attributes to use feature -->
+  </vue-md-powerful-datatable>
+  ```
+
+- in methods:
+  ```javascript
+  ...
+  methods: {
+    ...
+    selectedRowsChanged(selectedRows) {
+      console.log(selectedRows);
+    },
+    ...
+  }
+  ...
+  ```

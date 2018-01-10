@@ -3,7 +3,10 @@
     <VueMdPowerfulDatatable
       :headData="birdsHeadData"
       :data="birds"
-      :max="10">
+      selectable="true"
+      selectedRowIndexKey="name"
+      max=10
+      v-on:rowSelectionChange="selectedRowsChanged">
     </VueMdPowerfulDatatable>
   </div>
 </template>
@@ -69,6 +72,11 @@ export default {
         }, */
       ],
     };
+  },
+  methods: {
+    selectedRowsChanged(rows) {
+      console.log(rows);
+    },
   },
 };
 </script>
