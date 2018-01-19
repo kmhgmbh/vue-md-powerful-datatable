@@ -133,46 +133,58 @@ export default {
   name: 'vue-md-powerful-datatable',
 
   props: {
+    // data definition of columns
     headData: {
       type: Array,
       default: () => [],
     },
+    // rows
     data: {
       type: Array,
       default: () => [],
     },
-    ignoreColumns: {
-      type: Array,
-      default: () => [],
-    },
-    addRowButton: {
-      type: Object,
-      default: () => {},
-    },
-    search: {
-      type: Boolean,
-      default: true,
-    },
-    icons: {
-      type: Boolean,
-      default: true,
-    },
-    pager: {
-      type: Boolean,
-      default: true,
-    },
-    sortable: {
-      type: Boolean,
-      default: true,
-    },
-    selectable: {
-      type: Boolean,
-      default: false,
-    },
+    // number of rows per page
     max: {
       type: Number,
       default: 20,
     },
+    // activate pagination
+    pager: {
+      type: Boolean,
+      default: true,
+    },
+    // array of column keys to ignore
+    ignoreColumns: {
+      type: Array,
+      default: () => [],
+    },
+    // ?
+    addRowButton: {
+      type: Object,
+      default: () => {},
+    },
+    // activate search feature
+    search: {
+      type: Boolean,
+      default: true,
+    },
+    // activate icon feature
+    icons: {
+      type: Boolean,
+      default: true,
+    },
+
+    // activate sortable columns
+    sortable: {
+      type: Boolean,
+      default: true,
+    },
+    // activate select feature
+    selectable: {
+      type: Boolean,
+      default: false,
+    },
+    // key used by row selection
     selectedRowIndexKey: {
       type: String,
       default: null,
@@ -193,9 +205,6 @@ export default {
     },
 
     dynamicWidth() {
-      // if (this.$mq.resize && this.$mq.below(600)) {
-      //   return '';
-      // }
       return {
         'max-width': `${parseInt((100 / this.columnCount), 10)}%`,
       };
@@ -208,7 +217,6 @@ export default {
     shouldPagerBeDisplayed() {
       return this.pager && !this.isFilterActive && this.data.length;
     },
-
   },
 
   data() {
@@ -247,14 +255,7 @@ export default {
 
   methods: {
     noSearchFilter() {
-      /* eslint-disable */
-      for (const column in this.searchColumnFilter) {
-        if (this.searchColumnFilter[column] !== '') {
-          return false;
-        }
-      }
-      /* eslint-enable */
-      return true;
+      return this.searchColumnFilter.filter(column => column === '').length === 0;
     },
 
     /**
@@ -314,9 +315,7 @@ export default {
       if (!value) {
         return '';
       }
-      let returnValue = value;
-      returnValue += ''; // Convert integer
-      returnValue = value.toLowerCase();
+      let returnValue = value.toString().toLowerCase();
       returnValue = value.replace('.', '');
       returnValue = value.replace(/Ä/g, 'Ae');
       returnValue = value.replace(/ä/g, 'ae');
@@ -436,14 +435,12 @@ export default {
      * @return {Boolean}
      */
     isOnlyState(index) {
-      /* eslint-disable */
-      for (let column of this.headData) {
+      this.headData.reduce((onlyState, column) => {
         if (column.key === index && column.onlyState) {
           return column.onlyState;
         }
-      }
-      /* eslint-enable */
-      return false;
+        return onlyState;
+      }, false);
     },
 
     /**
@@ -472,16 +469,23 @@ export default {
 
     columnFilterMatched(row) {
       /* eslint-disable */
-      for (let column in this.searchColumnFilter) {
-        if (row[column]
-            .toString()
-            .toLowerCase()
-            .indexOf(this.searchColumnFilter[column].toLowerCase()) < 0) {
-          return false;
-        }
-      }
-      /* eslint-enable */
-      return true;
+
+      return Object.keys(this.searchColumnFilter).filter((columnKey) => {
+        const regExp = new RegExp(this.searchColumnFilter[columnKey], "ig");
+        const result = regExp.test(row[columnKey]);
+        console.log(regExp, this.searchColumnFilter[columnKey], result);
+        return result;
+      }).length === 0;
+      // for (let column in this.searchColumnFilter) {
+      //   if (row[column]
+      //       .toString()
+      //       .toLowerCase()
+      //       .indexOf(this.searchColumnFilter[column].toLowerCase()) < 0) {
+      //     return false;
+      //   }
+      // }
+      // /* eslint-enable */
+      // return true;
     },
 
     rowOnCurrentPage(index) {
