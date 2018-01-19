@@ -28,12 +28,14 @@ export default {
           name: 'Birdy',
           variety: 'Eagle',
           size: 330,
+          extinct: 0,
           wingCount: 1.5,
         },
         {
           name: 'Rosa',
           variety: 'Peacock',
           size: 630,
+          extinct: 2,
           wingCount: 2,
         },
       ],
@@ -53,6 +55,9 @@ export default {
             }
             return '';
           },
+        }, {
+          key: 'extinct',
+          onlyState: true,
         }, {
           key: 'wingCount',
           name: 'Number of wings',
