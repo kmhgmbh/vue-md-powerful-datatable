@@ -6,7 +6,10 @@
         <!-- TABLE HEAD -->
         <tr class="table-header">
           <th v-if="selectable" class="selection-column" :style="dynamicWidth">
-            <mdl-checkbox v-model="selectAllRowsFlag"></mdl-checkbox>
+            <mdl-checkbox
+              @change.native="toggleSelectAllRows()"
+              v-model="selectAllRowsFlag">
+            </mdl-checkbox>
           </th>
           <th @click="sort(head)" :class="{searchMode: getSearchContainer(id + '_search_container_' + encode(head.key, true)), sortable: !head.keys && sortable}" v-for="head in headData" v-if="(head.keys && icons) || (!head.keys && !ignore(head.key))" :style="dynamicWidth">
             <md-layout md-row style="max-width: 100%">
@@ -54,7 +57,12 @@
           <!-- ROW -->
           <tr :id="rowId(rowIndex)" class="table-row" :class="{active: isVisibleBlock(rowIndex) && withBlock, noHover: !withBlock}" :style="dynamicWidth">
             <td v-if="selectable" class="selection-column">
-              <mdl-checkbox @click.native="toggleDataRowSelection(row, rowIndex, $event)" v-model="selectedRows" :val="rowIndex"></mdl-checkbox>
+              <mdl-checkbox
+                @change.native="toggleDataRowSelection(row, rowIndex, $event)"
+                v-model="row.$isSelected"
+                :val="rowIndex">
+
+              </mdl-checkbox>
               <!-- <md-checkbox @change="toggleDataRowSelection(row, rowIndex)" v-model="selectedRows[rowIndex]"></md-checkbox> -->
             </td>
             <td @click="!column.keys && toggleBlock(rowIndex, row)" v-for="column, columnIndex in headData" :class="{hasIcon: (column.keys && icons)}" :style="dynamicWidth">
@@ -245,12 +253,12 @@ export default {
     this.id = this._uid;
     /* eslint-enable */
     this.columnCount = this.headData.length;
-  },
 
-  watch: {
-    selectAllRowsFlag() {
-      this.selectAllRows();
-    },
+    this.data = this.data.map((row) => {
+      const newRow = row;
+      newRow.$isSelected = false;
+      return newRow;
+    });
   },
 
   methods: {
@@ -505,36 +513,33 @@ export default {
       }
     },
 
-    selectAllRows() {
-      const selectedRowsAll = [];
-      this.selectedRowsByIndexKey = [];
-      if (this.selectAllRowsFlag) {
-        /* eslint-disable */
-        for (let row in this.data) {
-          selectedRowsAll.push(parseInt(row), 10);
-          if (this.selectedRowIndexKey) {
-            this.selectedRowsByIndexKey.push(this.data[row][this.selectedRowIndexKey]);
-          }
-        }
-        /* eslint-enable */
-        this.selectedRows = selectedRowsAll;
-      } else {
-        this.selectedRows = [];
-      }
+    toggleSelectAllRows() {
+      this.data = this.data.map((row) => {
+        const newRow = row;
+        newRow.$isSelected = this.selectAllRowsFlag;
+
+        return newRow;
+      });
+
+      this.selectedRowsByIndexKey = this.getAllSelectedRows();
       this.$emit('rowSelectionChange', this.selectedRowsByIndexKey);
     },
 
-    toggleDataRowSelection(rowData, index, event) {
+    getAllSelectedRows() {
+      return this.data.reduce((acc, row) => {
+        if (row.$isSelected) {
+          acc.push(row[this.selectedRowIndexKey]);
+        }
+        return acc;
+      }, []);
+    },
+
+    toggleDataRowSelection() {
       this.selectAllRowsFlag = false;
       // this.SelectedRows will be handled by checkbox
-      if (event.target.type === 'checkbox' && this.selectedRowIndexKey) {
-        const indexKey = rowData[this.selectedRowIndexKey];
-        const keyIndex = this.selectedRowsByIndexKey.indexOf(indexKey);
-        if (keyIndex >= 0) {
-          this.selectedRowsByIndexKey.splice(keyIndex, 1);
-        } else {
-          this.selectedRowsByIndexKey.push(indexKey);
-        }
+
+      if (this.selectedRowIndexKey) {
+        this.selectedRowsByIndexKey = this.getAllSelectedRows();
         this.$emit('rowSelectionChange', this.selectedRowsByIndexKey);
       }
     },
