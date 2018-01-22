@@ -21,7 +21,7 @@
   "scripts": {
     "build": "webpack -p --config build/webpack.prod.conf.js",
     "dev": "webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
-    "preversion": "npm run build && npm run build && git add build/* && git commit -m \"prepare new release\""
+    "preversion": "npm run build && npm run build && git add dist/* && git commit -m \"prepare new release\""
   },
   "dependencies": {
     "material-design-lite": "^1.3.0",
