@@ -6,7 +6,7 @@
 
 ### Roadmap
 - [ ] Refactor general code (from ugly for loops to array functions etc 🙄)
-- [ ] Add tests (jest maybe?)
+- [ ] Add tests (jest maybe?)
 - [ ] Refactor prop names
 - [ ] Refactor CSS
 
