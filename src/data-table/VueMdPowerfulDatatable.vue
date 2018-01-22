@@ -469,23 +469,16 @@ export default {
 
     columnFilterMatched(row) {
       /* eslint-disable */
-
-      return Object.keys(this.searchColumnFilter).filter((columnKey) => {
-        const regExp = new RegExp(this.searchColumnFilter[columnKey], "ig");
-        const result = regExp.test(row[columnKey]);
-        console.log(regExp, this.searchColumnFilter[columnKey], result);
-        return result;
-      }).length === 0;
-      // for (let column in this.searchColumnFilter) {
-      //   if (row[column]
-      //       .toString()
-      //       .toLowerCase()
-      //       .indexOf(this.searchColumnFilter[column].toLowerCase()) < 0) {
-      //     return false;
-      //   }
-      // }
+      for (let column in this.searchColumnFilter) {
+        if (row[column]
+            .toString()
+            .toLowerCase()
+            .indexOf(this.searchColumnFilter[column].toLowerCase()) < 0) {
+          return false;
+        }
+      }
       // /* eslint-enable */
-      // return true;
+      return true;
     },
 
     rowOnCurrentPage(index) {
