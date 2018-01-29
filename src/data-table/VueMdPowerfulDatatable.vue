@@ -704,12 +704,10 @@ export default {
           this.sortedColumns.clear();
         }
         this.sortAsc(head.key);
+      } else if (foundSortColumn === 'DESC') {
+        this.sortAsc(head.key);
       } else {
-        if (foundSortColumn === 'DESC') {
-          this.sortAsc(head.key);
-        } else {
-          this.sortDesc(head.key);
-        }
+        this.sortDesc(head.key);
       }
       this.pageRows(this.page - 1);
     },
