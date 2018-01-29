@@ -670,7 +670,6 @@ export default {
 
     setSearchContainer(id) {
       this.searchContainer.push(id);
-      this.$forceUpdate();
     },
 
     sortAsc(key) {
