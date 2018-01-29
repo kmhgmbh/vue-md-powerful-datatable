@@ -1,6 +1,6 @@
 {
   "name": "vue-md-powerful-datatable",
-  "version": "0.11.2",
+  "version": "0.12.0",
   "description": "A powerful datatable component based on material design for Vuw 2.0",
   "keywords": [
     "vuejs",
@@ -21,7 +21,7 @@
   "scripts": {
     "build": "webpack -p --config build/webpack.prod.conf.js",
     "dev": "webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
-    "preversion": "npm run build && git add dist/js/vue-md-powerful-datatable.js* && git commit -m \"prepare new release\""
+    "_preversion": "npm run build && git add dist/js/vue-md-powerful-datatable.js* && git commit -m \"prepare new release\""
   },
   "dependencies": {
     "material-design-lite": "^1.3.0",
