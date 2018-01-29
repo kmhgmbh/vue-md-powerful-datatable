@@ -585,20 +585,6 @@ export default {
       return false;
     },
 
-    columnFilterMatched(row) {
-      /* eslint-disable */
-      for (let column in this.searchColumnFilter) {
-        if (row[column]
-            .toString()
-            .toLowerCase()
-            .indexOf(this.searchColumnFilter[column].toLowerCase()) < 0) {
-          return false;
-        }
-      }
-      /* eslint-enable */
-      return true;
-    },
-
     pagerPrev() {
       if (this.page - 1 > 0) {
         this.pageRows((this.page - 1) - 1);
