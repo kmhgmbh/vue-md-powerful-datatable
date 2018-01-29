@@ -699,14 +699,12 @@ export default {
       // quirk as long as the ordering only works for one key
       const foundSortColumn = this.sortedColumns.get(head.key);
 
-      console.log(this.sortedColumns.size, foundSortColumn);
       if (!foundSortColumn) {
         if (this.sortedColumns.size === 1) {
           this.sortedColumns.clear();
         }
         this.sortAsc(head.key);
       } else {
-        console.log();
         if (foundSortColumn === 'DESC') {
           this.sortAsc(head.key);
         } else {
