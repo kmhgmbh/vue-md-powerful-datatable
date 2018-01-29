@@ -1,9 +1,9 @@
 <template>
-  <div id="app" class="component">
+  <div id='app' class='component'>
     <VueMdPowerfulDatatable
       :headData="birdsHeadData"
       :data="birds"
-      selectable="true"
+      selectable=true
       selectedRowIndexKey="name"
       max=10
       v-on:rowSelectionChange="selectedRowsChanged">
@@ -12,7 +12,32 @@
 </template>
 
 <script>
+import Faker from 'faker';
+
 import VueMdPowerfulDatatable from './data-table/VueMdPowerfulDatatable';
+
+const birds = [];
+
+const varieties = [
+  'Owl',
+  'Eagle',
+  'Peacock',
+  'Woodpecker',
+  'Cockoo',
+  'Parrot',
+];
+
+const numberOfRows = 100;
+
+for (let i = 0; i < numberOfRows; i += 1) {
+  birds.push({
+    name: Faker.name.firstName(),
+    variety: varieties[Math.floor(Math.random() * 5)],
+    size: Math.floor((Math.random() * 1000) + 1500),
+    extinct: Math.floor((Math.random() * 3) - 1),
+    wingCount: 2,
+  });
+}
 
 export default {
   name: 'app',
@@ -23,22 +48,7 @@ export default {
 
   data() {
     return {
-      birds: [
-        {
-          name: 'Birdy',
-          variety: 'Eagle',
-          size: 330,
-          extinct: 0,
-          wingCount: 1.5,
-        },
-        {
-          name: 'Rosa',
-          variety: 'Peacock',
-          size: 630,
-          extinct: 2,
-          wingCount: 2,
-        },
-      ],
+      birds,
       birdsHeadData: [
         {
           key: 'name',
