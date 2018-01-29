@@ -4,4 +4,3 @@ dist/*
 !dist/css/vue-md-powerful-datatable.*
 !dist/js/vue-md-powerful-datatable.*
 npm-debug.log
-!.git/hooks/pre-commit
