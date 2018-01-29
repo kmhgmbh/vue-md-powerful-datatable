@@ -375,7 +375,7 @@ export default {
           let found = false;
           Object.keys(row).forEach((key) => {
             if (this.searchColumnFilter[key]) {
-              const regex = new RegExp(this.searchColumnFilter[key]);
+              const regex = new RegExp(this.searchColumnFilter[key], 'i');
               if (regex.test(row[key])) found = true;
             }
           });
