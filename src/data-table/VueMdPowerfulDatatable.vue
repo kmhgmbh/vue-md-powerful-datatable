@@ -1,8 +1,7 @@
 <template>
-  <div v-if="show" class="data-table">
+  <div class="data-table">
     <div class="inner">
       <table>
-
         <!-- TABLE HEAD -->
         <tr class="table-header">
           <th v-if="selectable" class="selection-column" :style="dynamicWidth">
@@ -13,8 +12,8 @@
           </th>
           <th @click="sort(head)" :class="{searchMode: getSearchContainer(id + '_search_container_' + encode(head.key, true)), sortable: !head.keys && sortable}" v-for="head in headData" v-if="(head.keys && icons) || (!head.keys && !ignore(head.key))" :style="dynamicWidth">
             <md-layout md-row style="max-width: 100%">
-              <md-icon v-if="sortedAsc(head) && sortable" class="no-selection">arrow_drop_down</md-icon>
-              <md-icon v-else-if="sortedDesc(head) && sortable" class="no-selection">arrow_drop_up</md-icon>
+              <md-icon v-if="isSortedAfter(head.key) === 'DESC' && sortable" class="no-selection">arrow_drop_down</md-icon>
+              <md-icon v-else-if="isSortedAfter(head.key) === 'ASC' && sortable" class="no-selection">arrow_drop_up</md-icon>
               <md-icon v-else-if="!head.keys && sortable" class="no-selection right">arrow_drop_down</md-icon>
               <div v-if="!head.keys" class="headname no-selection">
                 <div class="title" :title="head.name">{{ head.name }}</div>
@@ -52,25 +51,21 @@
         </tr>
 
         <!-- TABLE CONTENT ROWS -->
-        <template v-for="row, rowIndex in (sortedData.length === 0 ? data : sortedData)" v-if="columnFilterMatched(row) && rowOnCurrentPage(rowIndex)">
+        <template v-for="row, rowIndex in rowsToShow">
 
           <!-- ROW -->
           <tr :id="rowId(rowIndex)" class="table-row" :class="{active: isVisibleBlock(rowIndex) && withBlock, noHover: !withBlock}" :style="dynamicWidth">
             <td v-if="selectable" class="selection-column">
               <mdl-checkbox
-                @change.native="toggleDataRowSelection(row, rowIndex, $event)"
-                v-model="row.$isSelected"
-                :val="rowIndex">
-
+                @change.native="toggleDataRowSelection()"
+                v-model="row.$isSelected">
               </mdl-checkbox>
-              <!-- <md-checkbox @change="toggleDataRowSelection(row, rowIndex)" v-model="selectedRows[rowIndex]"></md-checkbox> -->
             </td>
             <td @click="!column.keys && toggleBlock(rowIndex, row)" v-for="column, columnIndex in headData" :class="{hasIcon: (column.keys && icons)}" :style="dynamicWidth">
-
               <div class="columnHead">
                 {{ column.name || emptyHead }}
               </div>
-               <!-- Handle CTA's -->
+              <!-- Handle CTA's -->
               <div v-if="column.keys && icons">
                   <md-icon v-for="ikey in column.keys"
                            key="icon"
@@ -78,7 +73,7 @@
                            @click.native.stop.prevent="triggerCTA(ikey, row)">{{ getIconName(ikey.name, rowIndex) }}</md-icon>
                   <md-icon class="disabled" v-else-if="!isActionHidden(ikey, row)">{{ getIconName(ikey.name, rowIndex) }}</md-icon>
               </div>
-               <!-- Handle state flags  -->
+              <!-- Handle state flags  -->
               <div class="onlyState" v-else-if="column.onlyState && column.onlyState === true">
                 <md-icon :class="lensColor(column, row[column.key])">lens</md-icon>
               </div>
@@ -122,10 +117,10 @@
       <mdl-button class="grey" :disabled="page <= 1" @click.native="pagerPrev()">
         <md-icon>chevron_left</md-icon>
       </mdl-button>
-      <mdl-button v-for="pagenumber in pages" :key="pagenumber" class="grey" :class="{active: pagenumber === page}" @click.native="page = pagenumber">
+      <mdl-button v-for="pagenumber in pagesToShow" :disabled="pagenumber === '...'" :key="pagenumber" class="grey" :class="{active: pagenumber === page}" @click.native="gotoPage(pagenumber)">
         {{ pagenumber }}
       </mdl-button>
-      <mdl-button class="grey" :disabled="page >= pages" @click.native="pagerNext()">
+      <mdl-button class="grey" :disabled="page >= (allRows.length/max)" @click.native="pagerNext()">
         <md-icon>chevron_right</md-icon>
       </mdl-button>
     </div>
@@ -134,6 +129,7 @@
 
 <script>
 import Vue from 'vue';
+import uuid from 'uuid';
 
 Vue.config.productionTip = false;
 
@@ -202,8 +198,8 @@ export default {
   computed: {
     pages() {
       let length = 1;
-      if (this.data.length) {
-        length = this.data.length / this.max;
+      if (this.allRows.length) {
+        length = this.allRows.length / this.max;
         if (length < 1) {
           length = 1;
         }
@@ -223,26 +219,29 @@ export default {
     },
 
     shouldPagerBeDisplayed() {
-      return this.pager && !this.isFilterActive && this.data.length;
+      return this.pager && this.data.length;
     },
   },
 
   data() {
     return {
       id: -1,
-      show: true,
+      allRows: [],
+      rowsToShow: [],
+      rowMap: new Map(),
       searchContainer: [],
       searchColumnFilter: [],
-      sortedColumns: [],
+      sortedColumns: new Map(),
       columnCount: 0,
       page: 1,
+      pagesToShow: [],
       sortedData: [],
       visibleBlock: null,
       selectedRows: [],
       selectedRowsByIndexKey: [],
       selectAllRowsFlag: false,
       emptyHead: '...',
-      columsToShow: [],
+      columnsToShow: [],
       isFilterActive: false,
     };
   },
@@ -254,16 +253,166 @@ export default {
     /* eslint-enable */
     this.columnCount = this.headData.length;
 
-    this.data = this.data.map((row) => {
+    this.allRows = this.data.map((row) => {
+      const generatedUuid = uuid.v4();
+
       const newRow = row;
-      newRow.$isSelected = false;
+      const newMapRow = { row: newRow, mutatableProps: {} };
+      Object.defineProperty(newMapRow.mutatableProps, '$isSelected', {
+        get: () => {
+          const mapRow = this.rowMap.get(generatedUuid).mutatableProps;
+          if (!mapRow.$isSelected) {
+            return false;
+          }
+          return mapRow.$isSelected;
+        },
+        set: (newValue) => {
+          this.rowMap.get(generatedUuid).mutatableProps.$isSelected = newValue;
+        },
+      });
+
+      newRow.mapRef = generatedUuid;
+
+      this.rowMap.set(generatedUuid, newMapRow);
       return newRow;
     });
+
+    this.pageRows(0);
+    if (this.pager) {
+      this.rowsToShow = this.pagedRows(this.rowsToShow, { pageSize: this.max, pageNum: 0 });
+    }
   },
 
   methods: {
+    gotoPage(pageNum) {
+      this.page = pageNum;
+      this.pageRows(pageNum - 1);
+    },
+    updatePagesToShow() {
+      const pageRange = [];
+
+      const numPages = Math.floor(this.allRows.length / this.max);
+      const isNextPageInRange = this.page + 1 <= numPages;
+      const isPrevPageInRange = this.page - 1 > 0;
+
+      if (this.page - 2 > 0) {
+        pageRange.push(1);
+        if (this.page - 3 > 0) {
+          pageRange.push('...');
+        }
+      }
+      if (isPrevPageInRange
+        && !isNextPageInRange
+        && this.page - 3 > 0) {
+        pageRange.push(this.page - 2);
+        pageRange.push(this.page - 1);
+      } else if (isPrevPageInRange) {
+        pageRange.push(this.page - 1);
+      }
+      pageRange.push(this.page);
+      if (!isPrevPageInRange
+        && isNextPageInRange
+        && this.page + 3 <= numPages) {
+        pageRange.push(this.page + 1);
+        pageRange.push(this.page + 2);
+      } else if (isNextPageInRange) {
+        pageRange.push(this.page + 1);
+      }
+      if (this.page + 2 <= numPages) {
+        if (this.page + 3 <= numPages) {
+          pageRange.push('...');
+        }
+        pageRange.push(numPages);
+      }
+
+      this.pagesToShow = pageRange;
+    },
+
+    isSortedAfter(key) {
+      return this.sortedColumns.get(key);
+    },
+
     noSearchFilter() {
       return this.searchColumnFilter.filter(column => column === '').length === 0;
+    },
+
+    orderRows(rows) {
+      if (!this.sortedColumns.size) {
+        return rows;
+      }
+      return this.orderedRows(rows, {
+        column: this.sortedColumns.keys().next().value,
+        order: this.sortedColumns.values().next().value,
+      });
+    },
+
+    orderedRows(rows, sortSettings = null) {
+      let actualSortSettings = sortSettings;
+      if (!actualSortSettings) {
+        actualSortSettings = {
+          column: this.headData[0].key,
+          order: 'ASC',
+        };
+      }
+
+      let sortReturnLower = -1;
+      let sortReturnHigher = 1;
+      if (actualSortSettings.order === 'DESC') {
+        sortReturnLower = 1;
+        sortReturnHigher = -1;
+      }
+
+      return rows.sort((a, b) => {
+        const stringA = a[actualSortSettings.column].toString().toUpperCase();
+        const stringB = b[actualSortSettings.column].toString().toUpperCase();
+        if (stringA < stringB) {
+          return sortReturnLower;
+        }
+        if (stringA > stringB) {
+          return sortReturnHigher;
+        }
+
+        return 0;
+      });
+    },
+
+    searchedRows(rows) {
+      if (this.isFilterActive) {
+        return rows.filter((row) => {
+          let found = false;
+          Object.keys(row).forEach((key) => {
+            if (this.searchColumnFilter[key]) {
+              const regex = new RegExp(this.searchColumnFilter[key]);
+              if (regex.test(row[key])) found = true;
+            }
+          });
+          return found;
+        });
+      }
+      return rows;
+    },
+
+    searchedAndOrderedRows(rows) {
+      const searchedRows = this.searchedRows(rows);
+      const orderedRows = this.orderRows(searchedRows);
+
+      return orderedRows;
+    },
+
+    pagedRows(rows, { pageSize, pageNum } = {}) {
+      const startIndex = pageSize * (pageNum);
+      const endIndex = pageSize * (pageNum + 1);
+
+      return this.searchedAndOrderedRows(rows).slice(startIndex, endIndex);
+    },
+
+    pageRows(pageNum) {
+      this.rowsToShow = this.pagedRows(
+        this.data,
+        { pageSize: this.max, pageNum }
+      );
+      this.allRows = this.searchedAndOrderedRows(this.data);
+      this.updatePagesToShow();
     },
 
     /**
@@ -284,33 +433,6 @@ export default {
         color = 'green';
       }
       return color;
-    },
-
-    /**
-     * @name doIconAction
-     * @description create an link + redirect || generate + open sidebar
-     * @param {String} path
-     * @param {Object} rowData
-     * @fires this.linkCustom
-     * @fires this.setSidebar
-     */
-    generateAndExecuteLink(path, rowData) {
-      const newPath = path;
-      /* eslint-disable */
-      for (let keyIndex in path.params) {
-        let key = path.params[keyIndex];
-        let value = '';
-        if (typeof key === 'object') {
-          for (let childKeyIndex in key) {
-            let childKey = key[childKeyIndex];
-            value += value !== '' ? '-' : '';
-            value += rowData[childKey];
-          }
-          newPath.params[keyIndex] = this.encode(value);
-        }
-        // this.linkCustom(newPath);
-      }
-      /* eslint-enable */
     },
 
     /**
@@ -382,7 +504,7 @@ export default {
     extractColumnsToShow() {
       this.headData.forEach((item) => {
         if (item.key) {
-          this.columsToShow.push(item.key);
+          this.columnsToShow.push(item.key);
         }
       });
     },
@@ -394,7 +516,7 @@ export default {
      * @return {Boolean}
      */
     ignore(index) {
-      return this.ignoreColumns.includes(index) || !this.columsToShow.includes(index);
+      return this.ignoreColumns.includes(index) || !this.columnsToShow.includes(index);
     },
 
     rowId(index) {
@@ -489,32 +611,22 @@ export default {
       return true;
     },
 
-    rowOnCurrentPage(index) {
-      if (this.noSearchFilter()) {
-        const max = this.page * this.max;
-        const min = max - this.max;
-        if (index >= min && index < max) {
-          return true;
-        }
-        return false;
-      }
-      return true;
-    },
-
     pagerPrev() {
-      if (this.page > 1) {
-        this.page = this.page - 1;
+      if (this.page - 1 > 0) {
+        this.pageRows((this.page - 1) - 1);
+        this.page -= 1;
       }
     },
 
     pagerNext() {
-      if (this.page < this.pages) {
-        this.page = this.page + 1;
+      if (this.page < (this.allRows.length / this.max)) {
+        this.pageRows(this.page);
+        this.page += 1;
       }
     },
 
     toggleSelectAllRows() {
-      this.data = this.data.map((row) => {
+      this.allRows.forEach((row) => {
         const newRow = row;
         newRow.$isSelected = this.selectAllRowsFlag;
 
@@ -562,9 +674,14 @@ export default {
     },
 
     updateSearchColumnFilter(input, column) {
-      this.searchColumnFilter[column] = input;
-      this.isFilterActive = !this.noSearchFilter();
-      this.$forceUpdate();
+      if (input === '') {
+        delete this.searchColumnFilter[column];
+      } else {
+        this.searchColumnFilter[column] = input;
+      }
+
+      this.isFilterActive = Object.keys(this.searchColumnFilter).length > 0;
+      this.pageRows(this.page - 1);
     },
 
     clearSearchContainer(id, column) {
@@ -583,74 +700,33 @@ export default {
       this.$forceUpdate();
     },
 
-    sortedAsc(head) {
-      if (!head.keys) {
-        if (this.sortedColumns[head.key] === 'ASC') {
-          return true;
-        }
-      }
-      return false;
+    sortAsc(key) {
+      this.sortedColumns.set(key, 'ASC');
     },
 
-    sortedDesc(head) {
-      if (!head.keys) {
-        if (this.sortedColumns[head.key] === 'DESC') {
-          return true;
-        }
-      }
-      return false;
+    sortDesc(key) {
+      this.sortedColumns.set(key, 'DESC');
     },
 
     sort(head) {
-      if (!head.keys && this.sortable) {
-        if (this.sortedAsc(head)) {
-          this.sortedColumns = [];
-          this.sortedColumns[head.key] = 'DESC';
+      // quirk as long as the ordering only works for one key
+      const foundSortColumn = this.sortedColumns.get(head.key);
+
+      console.log(this.sortedColumns.size, foundSortColumn);
+      if (!foundSortColumn) {
+        if (this.sortedColumns.size === 1) {
+          this.sortedColumns.clear();
+        }
+        this.sortAsc(head.key);
+      } else {
+        console.log();
+        if (foundSortColumn === 'DESC') {
+          this.sortAsc(head.key);
         } else {
-          this.sortedColumns = [];
-          this.sortedColumns[head.key] = 'ASC';
+          this.sortDesc(head.key);
         }
-        if (this.sortedColumns[head.key] !== null) {
-          this.sortedData = this.data;
-          this.sortedData.sort(this.sortData(head.key, this.sortedColumns[head.key]));
-        }
-        this.$forceUpdate();
       }
-    },
-
-    sortData(key, sort) {
-      let sortOrder = 1;
-      if (sort === 'DESC') {
-        sortOrder = -1;
-      }
-      /* eslint-disable */
-      return (a, b) => {
-        const valueA = typeof a[key] === 'string' && a[key].match(/^[\d]+[.|,]?[\d]+?$/)
-                     ? parseFloat(a[key])
-                     : a[key];
-
-        const valueB = typeof b[key] === 'string' && b[key].match(/^[\d]+[.|,]?[\d]+?$/)
-                     ? parseFloat(b[key])
-                     : b[key];
-
-        const result = (valueA < valueB) ? -1 : (valueA > valueB) ? 1 : 0;
-        return result * sortOrder;
-      };
-      /* eslint-enable */
-    },
-
-    getAncestor(node, tagName) {
-      const tagNameUpper = tagName.toUpperCase();
-      let traversingNode = node;
-
-      while (traversingNode) {
-        if (traversingNode.nodeType === 1 && traversingNode.nodeName === tagNameUpper) {
-          return traversingNode;
-        }
-        traversingNode = traversingNode.parentNode;
-      }
-
-      return null;
+      this.pageRows(this.page - 1);
     },
   },
 };
