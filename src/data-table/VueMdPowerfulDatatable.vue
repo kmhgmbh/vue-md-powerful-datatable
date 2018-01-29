@@ -103,13 +103,6 @@
           </td>
         </tr>
       </table>
-
-      <!-- TABLE ADD LINE -->
-      <!-- <div v-if="Object.keys(addRowButton).length > 0" class="add-row">
-        <mdl-button class="add" @click.native="addRowButton.action">
-          <md-icon>add</md-icon> {{ addRowButton.label }}
-        </mdl-button>
-      </div>-->
     </div>
 
     <!-- TABLE PAGER -->
@@ -462,7 +455,6 @@ export default {
       return returnValue;
     },
 
-
     getIconName(icon, index) {
       if (typeof icon === 'function') {
         return icon(this.data[index]);
@@ -492,10 +484,6 @@ export default {
      */
     init() {
       this.extractColumnsToShow();
-
-      /* this.$nextTick(() => {
-        this.show = true;
-      }); */
     },
 
     /**
@@ -648,7 +636,6 @@ export default {
 
     toggleDataRowSelection() {
       this.selectAllRowsFlag = false;
-      // this.SelectedRows will be handled by checkbox
 
       if (this.selectedRowIndexKey) {
         this.selectedRowsByIndexKey = this.getAllSelectedRows();
