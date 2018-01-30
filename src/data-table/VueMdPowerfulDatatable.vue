@@ -216,6 +216,12 @@ export default {
     },
   },
 
+  watch: {
+    data() {
+      this.pageRows(this.page - 1);
+    },
+  },
+
   data() {
     return {
       id: -1,
