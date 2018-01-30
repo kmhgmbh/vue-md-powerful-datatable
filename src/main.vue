@@ -1,13 +1,32 @@
 <template>
   <div id='app' class='component'>
-    <VueMdPowerfulDatatable
-      :headData="birdsHeadData"
-      :data="birds"
-      selectable=true
-      selectedRowIndexKey="name"
-      max=10
-      v-on:rowSelectionChange="selectedRowsChanged">
-    </VueMdPowerfulDatatable>
+    <div class="main-content">
+      <md-layout>
+        <VueMdPowerfulDatatable
+          :headData="birdsHeadData"
+          :data="birds"
+          selectable=true
+          selectedRowIndexKey="name"
+          max=10
+          v-on:rowSelectionChange="selectedRowsChanged">
+        </VueMdPowerfulDatatable>
+
+        <md-layout md-gutter>
+          <md-layout md-flex-xsmall="100" md-flex-small="50" md-flex-medium="50">
+            <md-input-container>
+              <label>Number of Birds</label>
+              <md-input v-model="numBirds"></md-input>
+            </md-input-container>
+
+          </md-layout>
+          <md-layout md-flex-xsmall="100" md-flex-small="50" md-flex-medium="50">
+            <mdl-button @click.native="generateRandomData()">
+              Generate Random Data
+            </mdl-button>
+          </md-layout>
+        </md-layout>
+      </md-layout>
+    </div>
   </div>
 </template>
 
@@ -15,8 +34,6 @@
 import Faker from 'faker';
 
 import VueMdPowerfulDatatable from './data-table/VueMdPowerfulDatatable';
-
-const birds = [];
 
 const varieties = [
   'Owl',
@@ -27,18 +44,6 @@ const varieties = [
   'Parrot',
 ];
 
-const numberOfRows = 100;
-
-for (let i = 0; i < numberOfRows; i += 1) {
-  birds.push({
-    name: Faker.name.firstName(),
-    variety: varieties[Math.floor(Math.random() * 5)],
-    size: Math.floor((Math.random() * 1000) + 1500),
-    extinct: Math.floor((Math.random() * 3) - 1),
-    wingCount: 2,
-  });
-}
-
 export default {
   name: 'app',
 
@@ -48,7 +53,8 @@ export default {
 
   data() {
     return {
-      birds,
+      birds: [],
+      numBirds: 2000,
       birdsHeadData: [
         {
           key: 'name',
@@ -88,9 +94,28 @@ export default {
       ],
     };
   },
+
+  created() {
+    this.generateRandomData();
+  },
+
   methods: {
     selectedRowsChanged(rows) {
       console.log(rows);
+    },
+
+    generateRandomData() {
+      this.birds = [];
+
+      for (let i = 0; i < this.numBirds; i += 1) {
+        this.birds.push({
+          name: Faker.name.firstName(),
+          variety: varieties[Math.floor(Math.random() * 5)],
+          size: Math.floor((Math.random() * 1000) + 1500),
+          extinct: Math.floor((Math.random() * 3) - 1),
+          wingCount: 2,
+        });
+      }
     },
   },
 };
