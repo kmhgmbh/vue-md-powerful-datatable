@@ -284,7 +284,7 @@ export default {
     updatePagesToShow() {
       const pageRange = [];
 
-      const numPages = Math.floor(this.allRows.length / this.max);
+      const numPages = Math.ceil(this.allRows.length / this.max);
       const isNextPageInRange = this.page + 1 <= numPages;
       const isPrevPageInRange = this.page - 1 > 0;
 
