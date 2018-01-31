@@ -142,7 +142,7 @@ export default {
     },
     // number of rows per page
     max: {
-      type: Number,
+      type: String,
       default: 20,
     },
     // activate pagination
@@ -170,7 +170,6 @@ export default {
       type: Boolean,
       default: true,
     },
-
     // activate sortable columns
     sortable: {
       type: Boolean,
@@ -178,7 +177,7 @@ export default {
     },
     // activate select feature
     selectable: {
-      type: Boolean,
+      type: String,
       default: false,
     },
     // key used by row selection
