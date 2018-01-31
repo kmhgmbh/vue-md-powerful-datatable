@@ -276,9 +276,6 @@ export default {
     });
 
     this.pageRows(0);
-    if (this.pager) {
-      this.rowsToShow = this.pagedRows(this.rowsToShow, { pageSize: this.max, pageNum: 0 });
-    }
   },
 
   methods: {
@@ -405,11 +402,13 @@ export default {
     },
 
     pageRows(pageNum) {
+      const rowsClone = this.data.slice(0);
+
       this.rowsToShow = this.pagedRows(
-        this.data,
+        rowsClone,
         { pageSize: this.max, pageNum }
       );
-      this.allRows = this.searchedAndOrderedRows(this.data);
+      this.allRows = this.searchedAndOrderedRows(rowsClone);
       this.updatePagesToShow();
     },
 
@@ -617,7 +616,7 @@ export default {
     },
 
     getAllSelectedRows() {
-      return this.data.reduce((acc, row) => {
+      return this.data.slice(0).reduce((acc, row) => {
         if (row.$isSelected) {
           acc.push(row[this.selectedRowIndexKey]);
         }
