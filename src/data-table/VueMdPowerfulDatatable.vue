@@ -473,11 +473,7 @@ export default {
      * @param {Object} rowData
      */
     triggerCTA(meta, rowData) {
-      if (meta.action) {
-        meta.action(rowData);
-      } else if (meta.link) {
-        this.generateAndExecuteLink(meta.link, rowData);
-      }
+      meta.action(rowData);
     },
 
     /**
