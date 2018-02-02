@@ -367,12 +367,22 @@ export default {
       }
 
       return rows.sort((a, b) => {
-        const stringA = a[actualSortSettings.column].toString().toUpperCase();
-        const stringB = b[actualSortSettings.column].toString().toUpperCase();
-        if (stringA < stringB) {
+        let valueA = a[actualSortSettings.column];
+        let valueB = b[actualSortSettings.column];
+
+        if (parseInt(a[actualSortSettings.column], 10)
+          && parseInt(b[actualSortSettings.column], 10)) {
+          valueA = parseInt(a[actualSortSettings.column], 10);
+          valueB = parseInt(b[actualSortSettings.column], 10);
+        } else {
+          valueA = a[actualSortSettings.column].toString().toUpperCase();
+          valueB = b[actualSortSettings.column].toString().toUpperCase();
+        }
+
+        if (valueA < valueB) {
           return sortReturnLower;
         }
-        if (stringA > stringB) {
+        if (valueA > valueB) {
           return sortReturnHigher;
         }
 
