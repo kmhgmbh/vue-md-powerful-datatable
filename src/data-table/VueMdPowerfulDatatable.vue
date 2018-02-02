@@ -218,6 +218,7 @@ export default {
   watch: {
     data() {
       this.pageRows(this.page - 1);
+      this.addSelectedProp(this.data.filter(row => row.$isSelected === undefined));
     },
   },
 
@@ -251,34 +252,37 @@ export default {
     /* eslint-enable */
     this.columnCount = this.headData.length;
 
-    this.allRows = this.data.map((row) => {
-      const generatedUuid = uuid.v4();
-
-      const newRow = row;
-      const newMapRow = { row: newRow, mutatableProps: {} };
-      Object.defineProperty(newMapRow.mutatableProps, '$isSelected', {
-        get: () => {
-          const mapRow = this.rowMap.get(generatedUuid).mutatableProps;
-          if (!mapRow.$isSelected) {
-            return false;
-          }
-          return mapRow.$isSelected;
-        },
-        set: (newValue) => {
-          this.rowMap.get(generatedUuid).mutatableProps.$isSelected = newValue;
-        },
-      });
-
-      newRow.mapRef = generatedUuid;
-
-      this.rowMap.set(generatedUuid, newMapRow);
-      return newRow;
-    });
+    this.addSelectedProp(this.data);
 
     this.pageRows(0);
   },
 
   methods: {
+    addSelectedProp(rows) {
+      this.allRows = rows.map((row) => {
+        const generatedUuid = uuid.v4();
+
+        const newRow = row;
+        const newMapRow = { row: newRow, mutatableProps: {} };
+        Object.defineProperty(newMapRow.mutatableProps, '$isSelected', {
+          get: () => {
+            const mapRow = this.rowMap.get(generatedUuid).mutatableProps;
+            if (!mapRow.$isSelected) {
+              return false;
+            }
+            return mapRow.$isSelected;
+          },
+          set: (newValue) => {
+            this.rowMap.get(generatedUuid).mutatableProps.$isSelected = newValue;
+          },
+        });
+
+        newRow.mapRef = generatedUuid;
+
+        this.rowMap.set(generatedUuid, newMapRow);
+        return newRow;
+      });
+    },
     gotoPage(pageNum) {
       this.page = pageNum;
       this.pageRows(pageNum - 1);
