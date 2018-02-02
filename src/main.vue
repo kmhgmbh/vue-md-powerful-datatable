@@ -8,22 +8,30 @@
           selectable=true
           selectedRowIndexKey="name"
           max=10
-          v-on:rowSelectionChange="selectedRowsChanged">
+          ref="birdsTable"
+          v-on:rowSelectionChange="selectedRowsChanged"
+        >
         </VueMdPowerfulDatatable>
 
         <md-layout md-gutter>
-          <md-layout md-flex-xsmall="100" md-flex-small="50" md-flex-medium="50">
+          <md-layout md-flex-xsmall="100" md-flex-small="33" md-flex-medium="33">
             <md-input-container>
               <label>Number of Birds</label>
               <md-input v-model="numBirds"></md-input>
             </md-input-container>
 
           </md-layout>
-          <md-layout md-flex-xsmall="100" md-flex-small="50" md-flex-medium="50">
+          <md-layout md-flex-xsmall="100" md-flex-small="33" md-flex-medium="33">
             <mdl-button @click.native="generateRandomData()">
               Generate Random Data
             </mdl-button>
           </md-layout>
+        </md-layout>
+
+        <md-layout md-flex-xsmall="100" md-flex-small="33" md-flex-medium="33">
+          <mdl-button @click.native="setAllSelected()">
+            Select All
+          </mdl-button>
         </md-layout>
       </md-layout>
     </div>
@@ -104,6 +112,11 @@ export default {
       console.log(rows);
     },
 
+    setAllSelected() {
+      this.$refs.birdsTable.selectAllRowsFlag = !this.$refs.birdsTable.selectAllRowsFlag;
+      this.$refs.birdsTable.toggleSelectAllRows();
+    },
+
     generateRandomData() {
       this.birds = [];
 
@@ -111,7 +124,7 @@ export default {
         this.birds.push({
           name: Faker.name.firstName(),
           variety: varieties[Math.floor(Math.random() * 5)],
-          size: Math.floor((Math.random() * 1000) + 1500),
+          size: Math.floor((Math.random() * 1000) + 1),
           extinct: Math.floor((Math.random() * 3) - 1),
           wingCount: 2,
         });

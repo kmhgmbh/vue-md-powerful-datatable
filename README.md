@@ -129,6 +129,7 @@ $ yarn add vue-md-powerful-datatable
 | sortable | enable sort, default: ***true***| Boolean | |
 | selectable | enable selectable rows (selectedRowIndexKey must be provided on true), default: ***false***| Boolean | | 
 | selectedRowIndexKey | key name for selecting lines | String | `'name'`|
+| selectAllOnlyOnPage | the "select all" checkbox in table header will only select rows on current page | Boolean | `false`|
 
 
 #### Events
