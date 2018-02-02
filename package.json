@@ -1,7 +1,7 @@
 {
   "name": "vue-md-powerful-datatable",
   "version": "0.14.0",
-  "description": "A powerful datatable component based on material design for Vuw 2.0",
+  "description": "A powerful table component based on material design for VueJS 2",
   "keywords": [
     "vuejs",
     "vue",
