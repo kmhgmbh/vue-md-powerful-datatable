@@ -185,6 +185,11 @@ export default {
       type: String,
       default: null,
     },
+    // option to select only rows on page on select all checkbox
+    selectAllOnlyOnPage: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   computed: {
@@ -604,7 +609,12 @@ export default {
     },
 
     toggleSelectAllRows() {
-      this.allRows.forEach((row) => {
+      let rowsToSelect = this.allRows;
+      if (this.selectAllOnlyOnPage) {
+        rowsToSelect = this.rowsToShow;
+      }
+
+      rowsToSelect.forEach((row) => {
         const newRow = row;
         newRow.$isSelected = this.selectAllRowsFlag;
 
