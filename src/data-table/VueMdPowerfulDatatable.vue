@@ -661,9 +661,9 @@ export default {
           if (index >= 0) {
             return `${text.toString().substring(0, index)}
               <span class="highlight">
-              ${text.substring(index, index + pattern.length)}
+              ${text.toString().substring(index, index + pattern.length)}
               </span>
-              ${text.substring(index + pattern.length)}`;
+              ${text.toString().substring(index + pattern.length)}`;
           }
         }
       }
