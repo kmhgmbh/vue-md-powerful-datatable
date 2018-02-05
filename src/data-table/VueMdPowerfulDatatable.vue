@@ -264,7 +264,7 @@ export default {
 
   methods: {
     addSelectedProp(rows) {
-      this.allRows = rows.map((row) => {
+      this.allRows.concat(rows.map((row) => {
         const generatedUuid = uuid.v4();
 
         const newRow = row;
@@ -286,7 +286,7 @@ export default {
 
         this.rowMap.set(generatedUuid, newMapRow);
         return newRow;
-      });
+      }));
     },
     gotoPage(pageNum) {
       this.page = pageNum;
@@ -638,7 +638,7 @@ export default {
     getAllSelectedRows() {
       return this.data.slice(0).reduce((acc, row) => {
         if (row.$isSelected) {
-          acc.push(row[this.selectedRowIndexKey.toString()]);
+          acc.push(row[this.selectedRowIndexKey]);
         }
         return acc;
       }, []);
