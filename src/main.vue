@@ -6,7 +6,7 @@
           :headData="birdsHeadData"
           :data="birds"
           selectable=true
-          selectedRowIndexKey="name"
+          selectedRowIndexKey="id"
           max=10
           ref="birdsTable"
           v-on:rowSelectionChange="selectedRowsChanged"
@@ -24,6 +24,11 @@
           <md-layout md-flex-xsmall="100" md-flex-small="33" md-flex-medium="33">
             <mdl-button @click.native="generateRandomData()">
               Generate Random Data
+            </mdl-button>
+          </md-layout>
+          <md-layout md-flex-xsmall="100" md-flex-small="33" md-flex-medium="33">
+            <mdl-button @click.native="addRandomData()">
+              Add Random Data
             </mdl-button>
           </md-layout>
         </md-layout>
@@ -64,6 +69,10 @@ export default {
       birds: [],
       numBirds: 2000,
       birdsHeadData: [
+        {
+          key: 'id',
+          name: 'Database ID',
+        },
         {
           key: 'name',
           name: 'Birds Name',
@@ -117,11 +126,30 @@ export default {
       this.$refs.birdsTable.toggleSelectAllRows();
     },
 
+    addRandomData() {
+      const birdsBefore = this.birds.slice(0);
+      const newBirds = [];
+
+      for (let i = 0; i < this.numBirds; i += 1) {
+        newBirds.push({
+          id: `${i}`,
+          name: Faker.name.firstName(),
+          variety: varieties[Math.floor(Math.random() * 5)],
+          size: Math.floor((Math.random() * 1000) + 1),
+          extinct: Math.floor((Math.random() * 3) - 1),
+          wingCount: 2,
+        });
+      }
+
+      this.birds = birdsBefore.concat(newBirds);
+    },
+
     generateRandomData() {
       this.birds = [];
 
       for (let i = 0; i < this.numBirds; i += 1) {
         this.birds.push({
+          id: `${i}`,
           name: Faker.name.firstName(),
           variety: varieties[Math.floor(Math.random() * 5)],
           size: Math.floor((Math.random() * 1000) + 1),
