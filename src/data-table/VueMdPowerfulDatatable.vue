@@ -638,7 +638,7 @@ export default {
     getAllSelectedRows() {
       return this.data.slice(0).reduce((acc, row) => {
         if (row.$isSelected) {
-          acc.push(row[this.selectedRowIndexKey]);
+          acc.push(row[this.selectedRowIndexKey.toString()]);
         }
         return acc;
       }, []);
