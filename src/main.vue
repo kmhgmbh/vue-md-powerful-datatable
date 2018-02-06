@@ -7,7 +7,7 @@
           :data="birds"
           selectable=true
           selectedRowIndexKey="id"
-          max=10
+          :max="maxRows"
           ref="birdsTable"
           v-on:rowSelectionChange="selectedRowsChanged"
         >
@@ -17,7 +17,13 @@
           <md-layout md-flex-xsmall="100" md-flex-small="33" md-flex-medium="33">
             <md-input-container>
               <label>Number of Birds</label>
-              <md-input v-model="numBirds"></md-input>
+              <md-input type="number" v-model="numBirds"></md-input>
+            </md-input-container>
+          </md-layout>
+          <md-layout md-flex-xsmall="100" md-flex-small="33" md-flex-medium="33">
+            <md-input-container>
+              <label>Number of Rows</label>
+              <md-input type="number" v-model="maxRows"></md-input>
             </md-input-container>
 
           </md-layout>
@@ -67,7 +73,8 @@ export default {
   data() {
     return {
       birds: [],
-      numBirds: 2000,
+      numBirds: 10,
+      maxRows: 10,
       birdsHeadData: [
         {
           key: 'id',
