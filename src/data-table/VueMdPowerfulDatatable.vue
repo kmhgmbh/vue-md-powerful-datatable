@@ -6,7 +6,7 @@
         <tr class="table-header">
           <th v-if="selectable" class="selection-column" :style="dynamicWidth">
             <mdl-checkbox
-              @change.native="toggleSelectAllRows()"
+              @input="toggleSelectAllRows()"
               v-model="selectAllRowsFlag">
             </mdl-checkbox>
           </th>
@@ -57,8 +57,9 @@
           <tr :id="rowId(rowIndex)" class="table-row" :class="{active: isVisibleBlock(rowIndex) && withBlock, noHover: !withBlock}" :style="dynamicWidth">
             <td v-if="selectable" class="selection-column">
               <mdl-checkbox
-                @change.native="toggleDataRowSelection()"
-                v-model="row.$isSelected">
+                v-model="row.$isSelected"
+                @input="rowSelectInput($event, row)"
+                >
               </mdl-checkbox>
             </td>
             <td @click="!column.keys && toggleBlock(rowIndex, row)" v-for="column, columnIndex in headData" :class="{hasIcon: (column.keys && icons)}" :style="dynamicWidth">
@@ -268,17 +269,24 @@ export default {
         const generatedUuid = uuid.v4();
 
         const newRow = row;
-        const newMapRow = { row: newRow, mutatableProps: {} };
-        Object.defineProperty(newMapRow.mutatableProps, '$isSelected', {
+        const newMapRow = {
+          row: newRow,
+          mutableProps: {
+            isSelected: false,
+          },
+        };
+
+        Object.defineProperty(newRow, '$isSelected', {
           get: () => {
-            const mapRow = this.rowMap.get(generatedUuid).mutatableProps;
-            if (!mapRow.$isSelected) {
+            const mapRow = this.rowMap.get(generatedUuid).mutableProps;
+            if (!mapRow.isSelected) {
               return false;
             }
-            return mapRow.$isSelected;
+            return mapRow.isSelected;
           },
           set: (newValue) => {
-            this.rowMap.get(generatedUuid).mutatableProps.$isSelected = newValue;
+            this.$forceUpdate();
+            this.rowMap.get(generatedUuid).mutableProps.isSelected = newValue;
           },
         });
 
@@ -291,6 +299,7 @@ export default {
     gotoPage(pageNum) {
       this.page = pageNum;
       this.pageRows(pageNum - 1);
+      this.$forceUpdate();
     },
     updatePagesToShow() {
       const pageRange = [];
@@ -619,24 +628,29 @@ export default {
     },
 
     toggleSelectAllRows() {
-      let rowsToSelect = this.allRows;
+      let rowsToSelect = this.allRows.slice(0);
       if (this.selectAllOnlyOnPage) {
-        rowsToSelect = this.rowsToShow;
+        rowsToSelect = this.rowsToShow.slice(0);
       }
+      const currentSelectedFlag = this.selectAllRowsFlag;
 
+      /* eslint-disable */
       rowsToSelect.forEach((row) => {
-        const newRow = row;
-        newRow.$isSelected = this.selectAllRowsFlag;
-
-        return newRow;
+        if (!currentSelectedFlag) {
+          row.$isSelected = true;
+        }
+        if (row.$isSelected !== currentSelectedFlag) {
+          row.$isSelected = currentSelectedFlag;
+        }
       });
+      /* eslint-enable */
 
       this.selectedRowsByIndexKey = this.getAllSelectedRows();
       this.$emit('rowSelectionChange', this.selectedRowsByIndexKey);
     },
 
     getAllSelectedRows() {
-      return this.data.slice(0).reduce((acc, row) => {
+      return this.allRows.slice(0).reduce((acc, row) => {
         if (row.$isSelected) {
           acc.push(row[this.selectedRowIndexKey]);
         }
@@ -644,7 +658,7 @@ export default {
       }, []);
     },
 
-    toggleDataRowSelection() {
+    rowSelectInput() {
       this.selectAllRowsFlag = false;
 
       if (this.selectedRowIndexKey) {
