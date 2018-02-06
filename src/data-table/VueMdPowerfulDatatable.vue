@@ -405,7 +405,12 @@ export default {
           let found = false;
           Object.keys(row).forEach((key) => {
             if (this.searchColumnFilter[key]) {
-              const regex = new RegExp(this.searchColumnFilter[key], 'i');
+              /* eslint-disable */
+              let convertedWildcards = this.searchColumnFilter[key].replace('*', '[\\d\\w]*');
+              convertedWildcards = convertedWildcards.replace('?', '[\\d\\w]');
+              /* eslint-enable */
+              const regex = new RegExp(convertedWildcards, 'i');
+              console.log(regex);
               if (regex.test(row[key])) found = true;
             }
           });
