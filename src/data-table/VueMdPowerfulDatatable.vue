@@ -104,6 +104,12 @@
           </td>
         </tr>
       </table>
+
+      <div v-if="Object.keys(addRowButton).length > 0" class="add-row">
+        <mdl-button class="add" @click.native="addRowButton.action">
+          <md-icon>add</md-icon> {{ addRowButton.label }}
+        </mdl-button>
+      </div>
     </div>
 
     <!-- TABLE PAGER -->

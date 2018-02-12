@@ -8,6 +8,7 @@
           selectable=true
           selectedRowIndexKey="id"
           :max="maxRows"
+          :addRowButton="addRowMeta"
           ref="birdsTable"
           v-on:rowSelectionChange="selectedRowsChanged"
         >
@@ -75,6 +76,12 @@ export default {
       birds: [],
       numBirds: 10,
       maxRows: 10,
+      addRowMeta: {
+        label: 'neu',
+        action: () => {
+          console.log('yay');
+        },
+      },
       birdsHeadData: [
         {
           key: 'id',
