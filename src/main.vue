@@ -8,7 +8,7 @@
           selectable=true
           selectedRowIndexKey="id"
           :max="maxRows"
-          :addRowButton="addRowMeta"
+
           ref="birdsTable"
           v-on:rowSelectionChange="selectedRowsChanged"
         >
