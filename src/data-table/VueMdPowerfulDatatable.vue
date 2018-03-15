@@ -165,7 +165,9 @@ export default {
     // ?
     addRowButton: {
       type: Object,
+      /* eslint-disable */
       default: () => { return {}; },
+      /* eslint-enable */
     },
     // activate search feature
     search: {
@@ -416,7 +418,7 @@ export default {
               convertedWildcards = convertedWildcards.replace('?', '[\\d\\w]');
               /* eslint-enable */
               const regex = new RegExp(convertedWildcards, 'i');
-              console.log(regex);
+
               if (regex.test(row[key])) found = true;
             }
           });
