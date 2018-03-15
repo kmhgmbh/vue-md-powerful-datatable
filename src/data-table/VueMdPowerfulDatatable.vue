@@ -165,7 +165,7 @@ export default {
     // ?
     addRowButton: {
       type: Object,
-      default: {},
+      default: () => { return {}; },
     },
     // activate search feature
     search: {
