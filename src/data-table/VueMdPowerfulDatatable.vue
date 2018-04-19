@@ -10,7 +10,8 @@
               v-model="selectAllRowsFlag">
             </mdl-checkbox>
           </th>
-          <th @click="sort(head)" :class="{searchMode: getSearchContainer(id + '_search_container_' + encode(head.key, true)), sortable: !head.keys && sortable}" v-for="head in headData" v-if="(head.keys && icons) || (!head.keys && !ignore(head.key))" :style="dynamicWidth">
+          <th v-if="(head.keys && icons) || (!head.keys && !ignore(head.key))" v-for="(head, hIndex) in headData" :key="'table_head_' + hIndex" :style="dynamicWidth"
+            @click="sort(head)" :class="{searchMode: getSearchContainer(id + '_search_container_' + encode(head.key, true)), sortable: !head.keys && sortable}">
             <md-layout md-row style="max-width: 100%">
               <md-icon v-if="isSortedAfter(head.key) === 'DESC' && sortable" class="no-selection">arrow_drop_down</md-icon>
               <md-icon v-else-if="isSortedAfter(head.key) === 'ASC' && sortable" class="no-selection">arrow_drop_up</md-icon>
@@ -36,7 +37,7 @@
         <!-- TABLE COLUMN SEARCH MOBILE -->
         <tr v-if="search" class="table-row search-row">
           <td v-if="selectable" :style="dynamicWidth"></td>
-          <td v-for="column, column_index in data[0]" v-if="!ignore(column_index)" :style="dynamicWidth">
+          <td v-if="!ignore(column_index)" v-for="column, column_index in data[0]" :key="'column_' + column_index" :style="dynamicWidth">
             <div v-for="head in headData" v-if="head.key === column_index && !ignore(column_index)" class="columnHead">
               {{ head.name || emptyHead }}
             </div>
@@ -68,9 +69,7 @@
               </div>
               <!-- Handle CTA's -->
               <div v-if="column.keys && icons">
-                  <md-icon v-for="ikey in column.keys"
-                           key="icon"
-                           v-if="isActionActive(ikey, row)"
+                  <md-icon v-for="ikey in column.keys" key="icon" v-if="isActionActive(ikey, row)"
                            @click.native.stop.prevent="triggerCTA(ikey, row)">{{ getIconName(ikey.name, rowIndex) }}</md-icon>
                   <md-icon class="disabled" v-else-if="!isActionHidden(ikey, row)">{{ getIconName(ikey.name, rowIndex) }}</md-icon>
               </div>
@@ -105,7 +104,7 @@
         </tr>
       </table>
 
-      <div v-if="Object.keys(addRowButton).length > 0" class="add-row">
+      <div v-if="addRowButton" class="add-row">
         <mdl-button class="add" @click.native="addRowButton.action">
           <md-icon>add</md-icon> {{ addRowButton.label }}
         </mdl-button>
@@ -149,7 +148,7 @@ export default {
     },
     // number of rows per page
     max: {
-      type: String,
+      type: Number,
       default: 20,
     },
     // activate pagination
@@ -165,9 +164,7 @@ export default {
     // ?
     addRowButton: {
       type: Object,
-      /* eslint-disable */
-      default: () => { return {}; },
-      /* eslint-enable */
+      default: null,
     },
     // activate search feature
     search: {
@@ -186,7 +183,7 @@ export default {
     },
     // activate select feature
     selectable: {
-      type: String,
+      type: Boolean,
       default: false,
     },
     // key used by row selection
@@ -418,7 +415,6 @@ export default {
               convertedWildcards = convertedWildcards.replace('?', '[\\d\\w]');
               /* eslint-enable */
               const regex = new RegExp(convertedWildcards, 'i');
-
               if (regex.test(row[key])) found = true;
             }
           });
