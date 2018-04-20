@@ -22,7 +22,7 @@
                 <md-input-container v-if="getSearchContainer(id + '_search_container_' + encode(head.key, true))" :id="id + '_search_container_' + encode(head.key, true)" md-inline>
                   <label>Suchen...</label>
                   <md-layout>
-                    <md-input :id="id + '_search_input_' + encode(head.key, true)" @click.native.stop.prevent="" @input="updateSearchColumnFilter($event, head.key)" @propertychange="updateSearchColumnFilter($event, head.key)"></md-input>
+                    <md-input :id="id + '_search_input_' + encode(head.key, true)" @input="updateSearchColumnFilter($event, head.key)" @propertychange="updateSearchColumnFilter($event, head.key)"></md-input>
                   </md-layout>
                 </md-input-container>
 
@@ -37,8 +37,8 @@
         <!-- TABLE COLUMN SEARCH MOBILE -->
         <tr v-if="search" class="table-row search-row">
           <td v-if="selectable" :style="dynamicWidth"></td>
-          <td v-if="!ignore(column_index)" v-for="column, column_index in data[0]" :key="'column_' + column_index" :style="dynamicWidth">
-            <div v-for="head in headData" v-if="head.key === column_index && !ignore(column_index)" class="columnHead">
+          <td v-if="!ignore(column_index)" v-for="(column, columnIndex) in data[0]" :key="'column1_' + columnIndex" :style="dynamicWidth">
+            <div v-for="(head, headIndex) in headData" :key="'head1_' + headIndex" v-if="head.key === columnIndex && !ignore(columnIndex)" class="columnHead">
               {{ head.name || emptyHead }}
             </div>
             <md-input-container md-inline md-clearable>
@@ -46,16 +46,16 @@
               <md-input @input="updateSearchColumnFilter($event, column_index)" @propertychange="updateSearchColumnFilter($event, column_index)"></md-input>
             </md-input-container>
           </td>
-          <td :class="{hasIcon: true, hideMobile: true}" v-for="head, head_index in headData" v-if="head.keys" :style="dynamicWidth">
+          <td :class="{hasIcon: true, hideMobile: true}" v-for="(head, headIndex) in headData" :key="'head2_' + headIndex" v-if="head.keys" :style="dynamicWidth">
             <div class="columnHead">{{ emptyHead }}</div>
           </td>
         </tr>
 
         <!-- TABLE CONTENT ROWS -->
-        <template v-for="row, rowIndex in rowsToShow">
+        <template v-for="(row, rowIndex) in rowsToShow">
 
           <!-- ROW -->
-          <tr :id="rowId(rowIndex)" class="table-row" :class="{active: isVisibleBlock(rowIndex) && withBlock, noHover: !withBlock}" :style="dynamicWidth">
+          <tr :key="'row_' + rowIndex" :id="rowId(rowIndex)" class="table-row" :class="{active: isVisibleBlock(rowIndex) && withBlock, noHover: !withBlock}" :style="dynamicWidth">
             <td v-if="selectable" class="selection-column">
               <mdl-checkbox
                 v-model="row.$isSelected"
@@ -63,15 +63,15 @@
                 >
               </mdl-checkbox>
             </td>
-            <td @click="!column.keys && toggleBlock(rowIndex, row)" v-for="column, columnIndex in headData" :class="{hasIcon: (column.keys && icons)}" :style="dynamicWidth">
+            <td @click="!column.keys && toggleBlock(rowIndex, row)" v-for="(column, columnIndex) in headData" :key="'column2_' + columnIndex" :class="{hasIcon: (column.keys && icons)}" :style="dynamicWidth">
               <div class="columnHead">
                 {{ column.name || emptyHead }}
               </div>
               <!-- Handle CTA's -->
               <div v-if="column.keys && icons">
-                  <md-icon v-for="ikey in column.keys" key="icon" v-if="isActionActive(ikey, row)"
-                           @click.native.stop.prevent="triggerCTA(ikey, row)">{{ getIconName(ikey.name, rowIndex) }}</md-icon>
-                  <md-icon class="disabled" v-else-if="!isActionHidden(ikey, row)">{{ getIconName(ikey.name, rowIndex) }}</md-icon>
+                  <md-icon v-for="(ikey, ikeyIndex) in column.keys" v-if="isActionActive(ikey, row)" :key="'icon_' + ikeyIndex"
+                           @click.native.stop.prevent="triggerCTA(ikey, row)" :class="ikey.class || ''">{{ getIconName(ikey.name, rowIndex) }}</md-icon>
+                  <md-icon class="disabled" v-else-if="!isActionHidden(ikey, row)" :class="ikey.class || ''">{{ getIconName(ikey.name, rowIndex) }}</md-icon>
               </div>
               <!-- Handle state flags  -->
               <div class="onlyState" v-else-if="column.onlyState && column.onlyState === true">
