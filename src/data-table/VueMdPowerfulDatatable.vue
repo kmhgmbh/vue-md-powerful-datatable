@@ -28,7 +28,7 @@
 
               </div>
               <span v-else class="headname no-selection">{{ emptyHead }}</span>
-              <md-icon v-if="!getSearchContainer(id + '_search_container_' + encode(head.key, true)) && !head.keys && search" :id="id + '_search_icon_' + encode(head.key, true)" @click.native.stop.prevent="setSearchContainer(id + '_search_container_' + encode(head.key, true))" class="no-selection search">search</md-icon>
+              <md-icon v-if="!getSearchContainer(id + '_search_container_' + encode(head.key, true)) && !head.keys && search" :id="id + '_search_icon_' + encode(head.key, true)" @click.native.stop.prevent="setSearchContainer(id + '_search_container_' + encode(head.key, true), id + '_search_input_' + encode(head.key, true))" class="no-selection search">search</md-icon>
               <md-icon v-if="getSearchContainer(id + '_search_container_' + encode(head.key, true)) && !head.keys && search" :id="id + '_search_close_' + encode(head.key, true)" @click.native.stop.prevent="clearSearchContainer(id + '_search_container_' + encode(head.key, true), head.key)" class="no-selection search">close</md-icon>
             </md-layout>
           </th>
@@ -715,8 +715,11 @@ export default {
       return this.searchContainer.includes(id);
     },
 
-    setSearchContainer(id) {
+    setSearchContainer(id, inputId) {
       this.searchContainer.push(id);
+      this.$nextTick(() => {
+        document.getElementById(inputId).focus();
+      });
     },
 
     sortAsc(key) {
