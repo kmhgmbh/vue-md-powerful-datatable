@@ -196,6 +196,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // inform if table data was filtered from outside to hide visibleBlock
+    externalFilterApplied: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   computed: {
@@ -230,6 +235,13 @@ export default {
     data() {
       this.pageRows(this.page - 1);
       this.addSelectedProp(this.data.filter(row => row.$isSelected === undefined));
+    },
+    externalFilterApplied() {
+      this.visibleBlock = null;
+    },
+    // on filter skip to first page
+    pages() {
+      this.page = 1;
     },
   },
 
@@ -702,6 +714,7 @@ export default {
 
       this.isFilterActive = Object.keys(this.searchColumnFilter).length > 0;
       this.pageRows(this.page - 1);
+      this.visibleBlock = null;
     },
 
     clearSearchContainer(id, column) {
@@ -745,6 +758,7 @@ export default {
         this.sortDesc(head.key);
       }
       this.pageRows(this.page - 1);
+      this.visibleBlock = null;
     },
   },
 };
