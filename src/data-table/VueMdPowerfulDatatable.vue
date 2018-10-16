@@ -238,10 +238,13 @@ export default {
     },
     externalFilterApplied() {
       this.visibleBlock = null;
+      this.gotoPage(1);
+      this.updatePagesToShow();
     },
     // on filter skip to first page
     pages() {
-      this.page = 1;
+      this.gotoPage(1);
+      this.updatePagesToShow();
     },
   },
 
